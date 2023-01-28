@@ -1,0 +1,46 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+class segment_tree{
+    vector<int>seg;
+    public:
+    segment_tree(vector<int>&arr){
+        int n=arr.size();
+        seg.resize(4*n+1);
+        create(0,0,n-1,arr);
+    }
+    void type(){
+        cout << "Minimum Segment Tree"<<endl;
+    }
+    void create(int ind,int low, int high,vector<int>&arr){
+        if(low==high){
+            seg[ind]=arr[low];
+            return;
+        }
+        int mid=(low+high)/2;
+        create(2*ind+1,low,mid,arr);
+        create(2*ind+2,mid+1,high,arr);
+        seg[ind]=min(seg[2*ind+1],seg[2*ind+2]);
+    }
+    int query(int ind , int low, int high, int l, int r){
+        //No overlap
+        if(r<low | high<l)return INT_MAX;
+        // Complete Overlap
+        if(low>=l && high<=r)return seg[ind];
+        //Partial Overlap
+        int mid= (low+high)/2;
+        int left= query(2*ind+1,low,mid,l,r);
+        int right=query(2*ind+2,mid+1,high,l,r);
+        return min(left,right);
+    }
+    void update(int ind, int low, int high, int arr_ind, int val){
+        if(low==high){
+            seg[ind]=val;
+            return;
+        }
+        int mid=(low+high)/2;
+        if(arr_ind<=mid)update(2*ind+1,low,mid,arr_ind,val);
+        else update(2*ind+2,mid+1,high,arr_ind,val);
+        seg[ind]=min(seg[2*ind+1],seg[2*ind+2]);
+    }
+};
